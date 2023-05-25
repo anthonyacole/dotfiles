@@ -15,12 +15,6 @@
   become: true
   become_user: "{{ user }}"
 
-- name: Install config for root user
-  file:
-    src: "{{ home }}/.config/nvim"
-    dest: /root/.config/nvim
-    state: link
-
 # Aliases are too boring
 - name: Install vim alias
   file:

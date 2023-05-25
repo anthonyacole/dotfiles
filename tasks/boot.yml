@@ -1,13 +1,3 @@
-- name: Install Grub
-  kewlfft.aur.aur:
-    name: "{{ item }}"
-  become: true
-  become_user: aur_builder
-  loop:
-    - grub-customizer
-    - grub2-theme-archlinux
-    - os-prober
-
 - name: Install LightDM
   kewlfft.aur.aur:
     name: "{{ item }}"

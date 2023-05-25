@@ -12,12 +12,20 @@
   loop:
     - 9D5F1C051D146843CDA4858BDE64825E7CBC0D51  # ArchStrike
     - DDF7DB817396A49B2A2723F7403BD972F75D9D76  # archzfs
-    - 3056513887B78AEB  # chaotic-AUR
+    - FBA220DFC880C036  # chaotic-AUR
   changed_when: item not in repo_keys.stdout
+
+- name: Install chaotic AUR
+  pacman:
+    name: "{{ item }}"
+  become: true
+  loop:
+    - https://cdn-mirror.chaotic.cx/chaotic-aur/chaotic-keyring.pkg.tar.zst
+    - https://cdn-mirror.chaotic.cx/chaotic-aur/chaotic-mirrorlist.pkg.tar.zst
 
 - name: Install pacman config
   template:
-    src: ./files/pacman.conf
+    src: ./files/pacman.conf.orig
     dest: /etc/pacman.conf
     mode: '0644'
   register: pacman_conf
@@ -39,13 +47,6 @@
     mode: '0644'
   changed_when: false
 
-- name: Install chaotic AUR
-  pacman:
-    name: "{{ item }}"
-  become: true
-  loop:
-    - https://cdn-mirror.chaotic.cx/chaotic-aur/chaotic-keyring.pkg.tar.zst
-    - https://cdn-mirror.chaotic.cx/chaotic-aur/chaotic-mirrorlist.pkg.tar.zst
 
 - name: Update package repositories
   pacman:
