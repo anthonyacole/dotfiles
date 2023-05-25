@@ -94,13 +94,6 @@
     mode: '0644'
     owner: "{{ user }}"
 
-- name: Install pranklock
-  get_url:
-    url: https://raw.githubusercontent.com/RealOrangeOne/pranklock/master/pranklock
-    dest: /usr/bin/pranklock
-    mode: '0755'
-    force: true
-
 - name: Install Screen Layouts
   copy:
     src: ./files/screen-layouts

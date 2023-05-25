@@ -31,7 +31,7 @@
   loop_control:
     label: "{{ item.key }}"
   loop:
-    - {key: background, value: /usr/share/backgrounds/gnome/adwaita-night.jpg}
+    - {key: background, value: /usr/share/backgrounds/gnome/adwaita-d.webp}
     - {key: theme-name, value: Matcha-dark-aliz}
     - {key: icon-theme-name, value: Numix-Square}
     - {key: hide-user-image, value: "true"}
