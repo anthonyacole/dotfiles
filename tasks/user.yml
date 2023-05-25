@@ -1,0 +1,25 @@
+- name: Make me
+  user:
+    name: "{{ user }}"
+    home: "{{ home }}"
+    comment: Anthony Cole
+    shell: /usr/bin/zsh
+    system: true
+    groups:
+      - audio
+      - games
+      - input
+      - lp
+      - power
+      - scanner
+      - storage
+      - tty
+      - users
+      - uucp
+      - video
+      - wheel
+
+- name: Give user sudo access
+  lineinfile:
+    path: /etc/sudoers
+    line: "{{ user }} ALL=(ALL) ALL"

@@ -1,0 +1,25 @@
+- name: Install Virtualbox dependencies
+  kewlfft.aur.aur:
+    name: "{{ item }}"
+  become: true
+  become_user: aur_builder
+  loop:
+    - virtualbox-host-modules-arch
+
+- name: Install general applications
+  kewlfft.aur.aur:
+    name: "{{ item }}"
+  become: true
+  become_user: aur_builder
+  loop:
+    - filezilla
+    - firefox
+    - gimp
+    - inkscape
+    - libreoffice-fresh
+    - libreoffice-fresh-en-gb
+    - slack-desktop
+    - thunderbird
+    - tor-browser
+    - virtualbox
+    - vlc

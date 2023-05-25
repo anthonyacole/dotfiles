@@ -1,0 +1,3 @@
+user: anthony
+home: /home/{{ user }}
+ntp_timezone: Europe/London

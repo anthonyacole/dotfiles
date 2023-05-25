@@ -1,0 +1,149 @@
+- name: Install shell packages
+  kewlfft.aur.aur:
+    name: "{{ item }}"
+  become: true
+  become_user: aur_builder
+  loop:
+    - advanced-ssh-config
+    - alacritty
+    - arch-install-scripts
+    - bat
+    - catimg
+    - climate
+    - cmatrix
+    - direnv
+    - exa
+    - fd
+    - fpp
+    - htop
+    - jshon
+    - jq
+    - nnn
+    - oh-my-zsh-git
+    - pazi
+    - perl-file-mimeinfo
+    - pipes.sh
+    - playerctl
+    - progress
+    - reptyr
+    - ripgrep
+    - scrcpy
+    - screenfetch
+    - speedtest-cli
+    - sl
+    - terminator
+    - thefuck
+    - tmux
+    - tmux-xpanes
+    - ruby-tmuxinator
+    - xclip
+    - xsel
+    - zsh
+    - zsh-completions
+    - zsh-doc
+    - zsh-fast-syntax-highlighting
+
+- name: Install ZSH config
+  template:
+    src: ./files/zshrc
+    dest: "{{ home }}/.zshrc"
+    mode: '0644'
+    owner: "{{ user }}"
+    validate: zsh -n %s
+    backup: true
+    trim_blocks: false
+
+- name: Install global environment variables
+  template:
+    src: ./files/global-environment
+    dest: /etc/environment
+    mode: '0644'
+    owner: root
+    group: root
+
+- name: Install tmux config
+  template:
+    src: ./files/tmux.conf
+    dest: "{{ home }}/.tmux.conf"
+    mode: '0755'
+    owner: "{{ user }}"
+    group: users
+
+- name: Install tmux packages
+  git:
+    repo: "{{ item }}"
+    dest: "{{ home }}/.tmux/plugins/{{ item.split('/')[-1] }}"
+    force: true
+  become: true
+  become_user: "{{ user }}"
+  loop:
+    - https://github.com/jimeh/tmux-themepack
+    - https://github.com/tmux-plugins/tmux-yank
+    - https://github.com/tmux-plugins/tmux-sensible
+    - https://github.com/tmux-plugins/tmux-fpp
+
+- name: Create alacritty config directory
+  file:
+    path: "{{ home }}/.config/alacritty/"
+    state: directory
+    owner: "{{ user }}"
+    mode: '0755'
+
+- name: Create alacritty config
+  copy:
+    src: ./files/alacritty.yml
+    dest: "{{ home }}/.config/alacritty/alacritty.yml"
+    mode: '0644'
+    owner: "{{ user }}"
+
+- name: Create direnv config directory
+  file:
+    path: "{{ home }}/.config/direnv/"
+    state: directory
+    owner: "{{ user }}"
+    mode: '0755'
+
+- name: Create direnv config
+  copy:
+    src: ./files/direnv.toml
+    dest: "{{ home }}/.config/direnv/direnv.toml"
+    mode: '0644'
+    owner: "{{ user }}"
+
+- name: Create terminator directory
+  file:
+    path: "{{ home }}/.config/terminator/"
+    state: directory
+    owner: "{{ user }}"
+    mode: '0755'
+
+- name: Create alacritty config
+  copy:
+    src: ./files/terminator.conf
+    dest: "{{ home }}/.config/terminator/config"
+    mode: '0644'
+    owner: "{{ user }}"
+
+- name: Install tmuxinator config
+  copy:
+    src: ./files/tmuxinator
+    dest: "{{ home }}/.config"
+    mode: '0644'
+    owner: "{{ user }}"
+    group: users
+    directory_mode: '0755'
+
+- name: Install custom scripts
+  copy:
+    src: ./files/bin
+    dest: /usr/local
+    mode: '0755'
+    directory_mode: '0755'
+
+- name: Set vconsole keyboard
+  lineinfile:
+    path: /etc/vconsole.conf
+    state: present
+    line: KEYMAP=uk
+    create: true
+    mode: '0644'

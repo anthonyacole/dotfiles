@@ -1,0 +1,35 @@
+- name: Install dev packages
+  kewlfft.aur.aur:
+    name: "{{ item }}"
+  become: true
+  become_user: aur_builder
+  loop:
+    - ansible-base
+    - docker
+    - docker-compose
+    - firefox-developer-edition
+    - github-cli
+    - insomnia
+    - lazygit
+
+- name: Add user to docker group
+  user:
+    name: "{{ user }}"
+    groups: docker
+    append: true
+  become: true
+
+- name: Create global .gitignore
+  copy:
+    src: ./files/gitignore_global
+    dest: "{{ home }}/.config/.gitignore"
+    mode: '0644'
+    owner: "{{ user }}"
+
+- name: Install git config
+  template:
+    src: ./files/gitconfig.conf
+    dest: "{{ home }}/.gitconfig"
+    mode: '0644'
+    owner: "{{ user }}"
+    group: users

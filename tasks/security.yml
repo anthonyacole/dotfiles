@@ -1,0 +1,30 @@
+- name: Install security-related packages
+  kewlfft.aur.aur:
+    name: "{{ item }}"
+  become: true
+  become_user: aur_builder
+  loop:
+    - bitwarden
+    - bitwarden-cli
+
+- name: Create .ssh directory
+  file:
+    state: directory
+    path: "{{ home }}/.ssh"
+    owner: "{{ user }}"
+    mode: '0700'
+
+- name: Install assh config
+  copy:
+    src: ./files/assh.yml
+    dest: "{{ home }}/.ssh/assh.yml"
+    mode: '0644'
+    owner: "{{ user }}"
+
+- name: Create private directory
+  file:
+    state: directory
+    recurse: true
+    path: "{{ home }}/Private"
+    owner: "{{ user }}"
+    mode: '0700'

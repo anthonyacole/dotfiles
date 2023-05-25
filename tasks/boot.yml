@@ -1,0 +1,123 @@
+- name: Install Grub
+  kewlfft.aur.aur:
+    name: "{{ item }}"
+  become: true
+  become_user: aur_builder
+  loop:
+    - grub-customizer
+    - grub2-theme-archlinux
+    - os-prober
+
+- name: Install LightDM
+  kewlfft.aur.aur:
+    name: "{{ item }}"
+  become: true
+  become_user: aur_builder
+  loop:
+    - lightdm
+    - lightdm-gtk-greeter
+
+- name: Disable PC Speaker
+  modprobe:
+    name: pcspkr
+    state: absent
+  failed_when: false
+
+- name: Set lightdm greeter
+  ini_file:
+    path: /etc/lightdm/lightdm.conf
+    section: Seat:*
+    option: greeter-session
+    value: lightdm-gtk-greeter
+    mode: '0644'
+
+- name: Set LightDM settings
+  ini_file:
+    path: /etc/lightdm/lightdm-gtk-greeter.conf
+    section: greeter
+    option: "{{ item.key }}"
+    value: "{{ item.value }}"
+    mode: '0644'
+  loop_control:
+    label: "{{ item.key }}"
+  loop:
+    - {key: background, value: /usr/share/backgrounds/gnome/adwaita-night.jpg}
+    - {key: theme-name, value: Matcha-dark-aliz}
+    - {key: icon-theme-name, value: Numix-Square}
+    - {key: hide-user-image, value: "true"}
+    - {key: clock-format, value: "%H:%M:%S"}
+
+- name: Install file system helpers
+  kewlfft.aur.aur:
+    name: "{{ item }}"
+  become: true
+  become_user: aur_builder
+  loop:
+    - dosfstools
+    - exfat-utils
+    - hfsprogs
+    - ntfs-3g
+    - btrfs-progs
+
+- name: Install Microcode
+  kewlfft.aur.aur:
+    name: "{{ item }}"
+  become: true
+  become_user: aur_builder
+  loop:
+    - intel-ucode
+
+- name: Install nohang
+  kewlfft.aur.aur:
+    name: nohang-git
+  become: true
+  become_user: aur_builder
+
+- name: Enable nohang
+  systemd:
+    name: nohang-desktop
+    enabled: true
+    state: started
+
+- name: Install plymouth
+  kewlfft.aur.aur:
+    name: "{{ item }}"
+  become: true
+  become_user: aur_builder
+  loop:
+    - plymouth
+    - plymouth-theme-ibm-git
+
+- name: Set kernel parameters
+  lineinfile:
+    path: /etc/default/grub
+    regexp: ^GRUB_CMDLINE_LINUX_DEFAULT=
+    line: GRUB_CMDLINE_LINUX_DEFAULT="quiet splash loglevel=3 rd.udev.log_priority=3 vt.global_cursor_default=0"
+  register: kernel_parameters
+
+- name: Install plymouth config
+  copy:
+    src: ./files/plymouth.conf
+    dest: /etc/plymouth/plymouthd.conf
+    mode: '0644'
+  register: plymouth_config
+
+- name: Set hooks
+  lineinfile:
+    path: /etc/mkinitcpio.conf
+    regexp: ^HOOKS=
+    line: HOOKS=(base udev plymouth autodetect keyboard keymap modconf block encrypt filesystems fsck)
+  register: initrd_hooks
+
+- name: Rebuild initrd
+  command: mkinitcpio -P
+  changed_when: plymouth_config.changed or initrd_hooks.changed
+
+- name: Rebuild GRUB config
+  command: grub-mkconfig -o /boot/grub/grub.cfg
+  changed_when: kernel_parameters.changed
+
+- name: Enable lightdm
+  systemd:
+    name: lightdm
+    enabled: true

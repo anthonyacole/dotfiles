@@ -1,0 +1,7 @@
+- name: Remove aur_builder user
+  user:
+    name: aur_builder
+    state: absent
+    remove: true
+    force: true
+  changed_when: false

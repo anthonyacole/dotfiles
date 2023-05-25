@@ -1,0 +1,17 @@
+- name: Install productivity packages
+  kewlfft.aur.aur:
+    name: "{{ item }}"
+  become: true
+  become_user: aur_builder
+  loop:
+    - nextcloud-client
+    - obsidian-appimage
+
+
+- name: Create dotfiles directory
+  file:
+    state: directory
+    path: "{{ home }}/.dotfiles"
+    owner: "{{ user }}"
+    group: users
+    mode: 0700

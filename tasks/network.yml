@@ -1,0 +1,25 @@
+- name: Install networking tools
+  kewlfft.aur.aur:
+    name: "{{ item }}"
+  become: true
+  become_user: aur_builder
+  loop:
+    - bind-tools
+    - gnu-netcat
+    - nmap
+
+- name: Install NetworkManager and associated tools
+  kewlfft.aur.aur:
+    name: "{{ item }}"
+  become: true
+  become_user: aur_builder
+  loop:
+    - networkmanager
+    - network-manager-applet
+    - networkmanager-openvpn
+
+- name: Enable NetworkManger
+  systemd:
+    name: NetworkManager
+    enabled: true
+    state: started

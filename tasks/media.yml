@@ -1,0 +1,27 @@
+- name: Install Spotify
+  kewlfft.aur.aur:
+    name: "{{ item }}"
+  become: true
+  become_user: aur_builder
+  loop:
+    - ffmpeg-compat-57
+    - spotify
+
+- name: Install media-related packages
+  kewlfft.aur.aur:
+    name: "{{ item }}"
+  become: true
+  become_user: aur_builder
+  loop:
+    - alsa-firmware
+    - handbrake
+
+- name: Install pulseaudio
+  kewlfft.aur.aur:
+    name: "{{ item }}"
+  become: true
+  become_user: aur_builder
+  loop:
+    - alsa-utils
+    - pavucontrol
+    - pulseaudio

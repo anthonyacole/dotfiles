@@ -1,0 +1,35 @@
+- hosts: local
+  connection: local
+  tasks:
+    - name: Include extra metadata
+      include_vars:
+        file: vars.yml
+
+    - import_tasks: tasks/user.yml
+    - import_tasks: tasks/packages.yml
+
+    - include_role:
+        name: geerlingguy.ntp
+
+    - include_role:
+        name: realorangeone.reflector
+
+    - import_tasks: tasks/boot.yml
+    - import_tasks: tasks/i3.yml
+    - import_tasks: tasks/network.yml
+    - import_tasks: tasks/shell.yml
+    - import_tasks: tasks/input.yml
+    - import_tasks: tasks/autostart.yml
+    - import_tasks: tasks/fonts.yml
+    - import_tasks: tasks/security.yml
+
+    - import_tasks: tasks/python.yml
+    - import_tasks: tasks/neovim.yml
+    - import_tasks: tasks/jetbrains.yml
+    - import_tasks: tasks/gnome.yml
+    - import_tasks: tasks/javascript.yml
+    - import_tasks: tasks/applications.yml
+    - import_tasks: tasks/dev.yml
+    - import_tasks: tasks/media.yml
+
+    - import_tasks: tasks/cleanup.yml

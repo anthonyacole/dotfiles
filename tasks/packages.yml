@@ -1,0 +1,96 @@
+- name: Get repository keys
+  shell: pacman-key --list-sigs
+  become: true
+  register: repo_keys
+  changed_when: false
+
+- name: Install custom repo keys
+  shell:
+    cmd: pacman-key -r {{ item }} && pacman-key --lsign-key {{ item }}
+  become: true
+  register: added_repo_keys
+  loop:
+    - 9D5F1C051D146843CDA4858BDE64825E7CBC0D51  # ArchStrike
+    - DDF7DB817396A49B2A2723F7403BD972F75D9D76  # archzfs
+    - 3056513887B78AEB  # chaotic-AUR
+  changed_when: item not in repo_keys.stdout
+
+- name: Install pacman config
+  template:
+    src: ./files/pacman.conf
+    dest: /etc/pacman.conf
+    mode: '0644'
+  register: pacman_conf
+
+- name: Create aur_builder user
+  user:
+    name: aur_builder
+    group: wheel
+    password_lock: true
+    shell: /usr/bin/nologin
+  changed_when: false
+
+- name: Allow aur_builder user to run pacman as root
+  lineinfile:
+    path: /etc/sudoers.d/11-install-aur_builder
+    line: "aur_builder ALL=(ALL) NOPASSWD: /usr/bin/pacman"
+    create: true
+    validate: visudo -cf %s
+    mode: '0644'
+  changed_when: false
+
+- name: Install chaotic AUR
+  pacman:
+    name: "{{ item }}"
+  become: true
+  loop:
+    - https://cdn-mirror.chaotic.cx/chaotic-aur/chaotic-keyring.pkg.tar.zst
+    - https://cdn-mirror.chaotic.cx/chaotic-aur/chaotic-mirrorlist.pkg.tar.zst
+
+- name: Update package repositories
+  pacman:
+    update_cache: true
+  become: true
+  when: added_repo_keys.changed or pacman_conf.changed
+
+- name: Install yay
+  kewlfft.aur.aur:
+    name: yay
+  become: true
+  become_user: aur_builder
+
+- name: Install additional repo keyrings
+  kewlfft.aur.aur:
+    name: "{{ item }}"
+  become: true
+  become_user: aur_builder
+  loop:
+    - archstrike-keyring
+
+- name: Install ccache
+  kewlfft.aur.aur:
+    name: ccache
+  become: true
+  become_user: aur_builder
+
+- name: Install makepkg tools
+  kewlfft.aur.aur:
+    name: "{{ item }}"
+  become: true
+  become_user: aur_builder
+  loop:
+    - pbzip2
+    - zstd
+    - pigz
+
+- name: Install makepkg config
+  template:
+    src: ./files/makepkg.conf
+    dest: /etc/makepkg.conf
+    mode: '0644'
+
+- name: Install pacman tools
+  kewlfft.aur.aur:
+    name: pacman-contrib
+  become: true
+  become_user: aur_builder
