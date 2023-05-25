@@ -29,6 +29,7 @@
     - import_tasks: tasks/gnome.yml
     - import_tasks: tasks/javascript.yml
     - import_tasks: tasks/applications.yml
+    - import_tasks: tasks/productivity.yml
     - import_tasks: tasks/dev.yml
     - import_tasks: tasks/media.yml
 
