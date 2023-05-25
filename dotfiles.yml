@@ -33,4 +33,7 @@
     - import_tasks: tasks/dev.yml
     - import_tasks: tasks/media.yml
 
+    - import_tasks: tasks/mac.yml
+      when: "'Mac' in ansible_facts.product_name"
+
     - import_tasks: tasks/cleanup.yml
