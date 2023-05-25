@@ -6,6 +6,8 @@
   loop:
     - dotnet-sdk
     - dotnet-sdk-6.0
+    - aspnet-runtime
+    - aspnet-runtime-6.0
     - mono-msbuild
 
 - name: Install Jetbrains packages
