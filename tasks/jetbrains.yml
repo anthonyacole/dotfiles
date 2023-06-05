@@ -16,6 +16,7 @@
   become: true
   become_user: aur_builder
   loop:
+    - jre17-openjdk
     - rider
     - webstorm
     - datagrip
