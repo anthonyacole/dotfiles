@@ -4,9 +4,7 @@
   become: true
   become_user: aur_builder
   loop:
-    - nextcloud-client
     - obsidian-appimage
-
 
 - name: Create dotfiles directory
   file:
