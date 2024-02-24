@@ -78,13 +78,6 @@
     - plymouth
     - plymouth-theme-ibm-git
 
-- name: Set kernel parameters
-  lineinfile:
-    path: /etc/default/grub
-    regexp: ^GRUB_CMDLINE_LINUX_DEFAULT=
-    line: GRUB_CMDLINE_LINUX_DEFAULT="quiet splash loglevel=3 rd.udev.log_priority=3 vt.global_cursor_default=0"
-  register: kernel_parameters
-
 - name: Install plymouth config
   copy:
     src: ./files/plymouth.conf
@@ -102,10 +95,6 @@
 - name: Rebuild initrd
   command: mkinitcpio -P
   changed_when: plymouth_config.changed or initrd_hooks.changed
-
-- name: Rebuild GRUB config
-  command: grub-mkconfig -o /boot/grub/grub.cfg
-  changed_when: kernel_parameters.changed
 
 - name: Enable lightdm
   systemd:

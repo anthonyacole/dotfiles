@@ -1,0 +1,4 @@
+- hosts: local
+  connection: local
+  tasks:
+    - import_tasks: tasks/applications.yml
